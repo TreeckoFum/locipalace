@@ -207,7 +207,7 @@ export function RecallModal() {
   return (
     <AnimatePresence>
       {isRecallModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -217,14 +217,16 @@ export function RecallModal() {
             className="fixed inset-0 bg-slate-950/85 backdrop-blur-md"
           />
 
-          {/* Modal Container */}
+          {/* Modal Container (Bottom Sheet on < md, Centered on md+) */}
           <motion.div
             initial={{ opacity: 0, scale: 0.94, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.94, y: 12 }}
             transition={{ type: 'spring', stiffness: 340, damping: 28 }}
-            className="relative z-10 w-full max-w-2xl overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/95 backdrop-blur-xl shadow-2xl shadow-black/80"
+            className="relative z-10 w-full max-w-2xl max-h-[88vh] overflow-y-auto rounded-t-3xl md:rounded-2xl border border-slate-800 bg-slate-900/95 backdrop-blur-xl shadow-2xl shadow-black/80"
           >
+            {/* Mobile Drag Handle Pill */}
+            <div className="mx-auto mt-2.5 h-1.5 w-12 shrink-0 rounded-full bg-slate-700 md:hidden" />
             {/* Header — Exposes ONLY Physical Anchor Title & Coordinates */}
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
               <div className="flex items-center gap-3">

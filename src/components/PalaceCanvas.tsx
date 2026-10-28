@@ -15,6 +15,7 @@ import {
   Trophy,
   BookOpen,
   History,
+  Plus,
 } from 'lucide-react';
 import { useLocale } from 'next-intl';
 import { usePalaceStore, SAMPLE_STUDY_DESK_SVG } from '@/store/usePalaceStore';
@@ -109,6 +110,7 @@ export function PalaceCanvas() {
     startExamSession,
     recordPhase1,
     toggleExamHistoryDrawer,
+    togglePalaceManager,
     answerExamPin,
     movePinCoords,
     resetRecallProgress,
@@ -231,7 +233,10 @@ export function PalaceCanvas() {
 
   if (!currentRoom) {
     return (
-      <div className="flex-1 h-full w-full relative overflow-hidden bg-slate-950 flex items-center justify-center p-4">
+      <div
+        style={{ touchAction: 'manipulation' }}
+        className="flex-1 h-full w-full relative overflow-hidden bg-slate-950 flex items-center justify-center p-4 touch-manipulation"
+      >
         <input
           ref={fileInputRef}
           type="file"
@@ -239,13 +244,31 @@ export function PalaceCanvas() {
           onChange={handleUploadPhoto}
           className="hidden"
         />
-        <div className="max-w-md rounded-2xl border border-dashed border-slate-800 bg-slate-900/60 p-8 text-center space-y-4">
-          <p className="text-sm text-slate-300">{t.app.canvas.clickToPlacePin}</p>
-          <div className="flex items-center justify-center gap-3">
+        <div className="w-full max-w-md rounded-2xl border border-dashed border-slate-800 bg-slate-900/60 p-6 sm:p-8 text-center space-y-4">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-indigo-500/30 bg-indigo-500/15 text-indigo-400">
+            <Plus className="h-6 w-6" />
+          </div>
+          <div className="space-y-1.5">
+            <h2 className="text-base font-extrabold text-white">
+              {t.app.manager.newPalaceBtn}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400">
+              {t.app.canvas.clickToPlacePin}
+            </p>
+          </div>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-2.5 pt-1">
+            <button
+              type="button"
+              onClick={() => togglePalaceManager(true)}
+              className="w-full md:w-auto cursor-pointer inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 px-4 py-2.5 text-xs font-bold text-slate-950 shadow-lg hover:from-indigo-400 hover:to-cyan-400 transition"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>{t.app.manager.newPalaceBtn}</span>
+            </button>
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-xs font-bold text-slate-950"
+              className="w-full md:w-auto cursor-pointer inline-flex items-center justify-center gap-2 rounded-xl border border-indigo-500/40 bg-indigo-500/15 px-4 py-2.5 text-xs font-bold text-indigo-200 hover:bg-indigo-500/25 transition"
             >
               <Upload className="h-3.5 w-3.5" />
               <span>{t.app.canvas.uploadPhoto}</span>
@@ -253,7 +276,7 @@ export function PalaceCanvas() {
             <button
               type="button"
               onClick={handleLoadSample}
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-200"
+              className="w-full md:w-auto cursor-pointer inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-semibold text-slate-200 hover:bg-slate-700 transition"
             >
               <Sparkles className="h-3.5 w-3.5 text-cyan-400" />
               <span>{t.app.canvas.loadSample}</span>
@@ -469,7 +492,10 @@ export function PalaceCanvas() {
     totalPins > 0 && pins.every((p) => Boolean(revealedPins[p.id]));
 
   return (
-    <div className="flex-1 h-full w-full relative overflow-hidden bg-slate-950 flex items-center justify-center p-4">
+    <div
+      style={{ touchAction: 'manipulation' }}
+      className="flex-1 h-full w-full relative overflow-hidden bg-slate-950 flex items-center justify-center p-2 sm:p-4 touch-manipulation"
+    >
       {/* Hidden File Input for Quick Room Photo Upload */}
       <input
         ref={fileInputRef}
@@ -564,8 +590,9 @@ export function PalaceCanvas() {
           maxHeight: 'calc(100vh - 115px)',
           maxWidth: `min(100%, calc((100vh - 115px) * ${ratio}))`,
           width: '100%',
+          touchAction: 'manipulation',
         }}
-        className={`relative mx-auto rounded-2xl border border-slate-800 bg-slate-950 shadow-2xl select-none overflow-visible ${
+        className={`relative mx-auto rounded-2xl border border-slate-800 bg-slate-950 shadow-2xl select-none overflow-visible touch-manipulation ${
           studyMode === 'build' ? 'cursor-crosshair' : 'cursor-default'
         }`}
       >
@@ -666,7 +693,7 @@ export function PalaceCanvas() {
                 )}
               </AnimatePresence>
 
-              {/* Pin Button */}
+              {/* Pin Button (minimum 44x44px touch target on mobile) */}
               <motion.button
                 type="button"
                 onPointerDown={(e) => handlePinPointerDown(e, pin)}
@@ -682,9 +709,12 @@ export function PalaceCanvas() {
                   stiffness: 360,
                   damping: 22,
                 }}
+                style={{ touchAction: 'manipulation' }}
                 aria-label={pin.title}
-                className={`group relative flex items-center justify-center focus:outline-none ${
-                  studyMode === 'build' ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'
+                className={`group relative flex min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 items-center justify-center touch-manipulation focus:outline-none ${
+                  studyMode === 'build'
+                    ? 'cursor-grab active:cursor-grabbing'
+                    : 'cursor-pointer'
                 }`}
               >
                 <span

@@ -109,7 +109,7 @@ export function SavePalaceModal({ locale: propLocale }: SavePalaceModalProps) {
       {/* Save & Organize Palace Modal (z-[85]) */}
       <AnimatePresence>
         {isSavePalaceModalOpen && currentRoom && (
-          <div className="fixed inset-0 z-[85] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[85] flex items-end md:items-center justify-center p-0 md:p-4">
             {/* Dark Glassmorphic Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -119,14 +119,16 @@ export function SavePalaceModal({ locale: propLocale }: SavePalaceModalProps) {
               className="fixed inset-0 bg-slate-950/85 backdrop-blur-md"
             />
 
-            {/* Modal Card */}
+            {/* Modal Card (Bottom Sheet on < md, Centered on md+) */}
             <motion.div
               initial={{ opacity: 0, scale: 0.94, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.94, y: 12 }}
               transition={{ type: 'spring', stiffness: 360, damping: 28 }}
-              className="relative z-10 w-full max-w-md overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/95 backdrop-blur-xl shadow-2xl shadow-black"
+              className="relative z-10 w-full max-w-md max-h-[88vh] overflow-y-auto rounded-t-3xl md:rounded-2xl border border-slate-800 bg-slate-900/95 backdrop-blur-xl shadow-2xl shadow-black"
             >
+              {/* Mobile Drag Handle Pill */}
+              <div className="mx-auto mt-2.5 h-1.5 w-12 shrink-0 rounded-full bg-slate-700 md:hidden" />
               {/* Header */}
               <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
                 <div className="flex items-center gap-3">
@@ -254,18 +256,18 @@ export function SavePalaceModal({ locale: propLocale }: SavePalaceModalProps) {
                 </div>
 
                 {/* Footer Actions */}
-                <div className="flex items-center justify-end gap-2.5 border-t border-slate-800 pt-4 mt-2">
+                <div className="flex flex-col-reverse md:flex-row items-center justify-end gap-2.5 border-t border-slate-800 pt-4 mt-2">
                   <button
                     type="button"
                     onClick={() => toggleSavePalaceModal(false)}
-                    className="rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition"
+                    className="w-full md:w-auto cursor-pointer rounded-xl border border-slate-700 bg-slate-800/80 px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-700 hover:text-white transition"
                   >
                     {t.app.manager.btnCancel}
                   </button>
 
                   <button
                     type="submit"
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 px-4 py-2 text-xs font-bold text-slate-950 shadow-lg shadow-indigo-500/25 hover:from-indigo-400 hover:to-cyan-400 transition"
+                    className="w-full md:w-auto cursor-pointer inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 px-4 py-2 text-xs font-bold text-slate-950 shadow-lg shadow-indigo-500/25 hover:from-indigo-400 hover:to-cyan-400 transition"
                   >
                     <Save className="h-3.5 w-3.5" />
                     <span>{t.nav.saveChangesBtn}</span>

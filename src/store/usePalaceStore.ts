@@ -238,6 +238,7 @@ interface PalaceState {
   activePalaceId: string;
   isPalaceManagerOpen: boolean;
   isSavePalaceModalOpen: boolean;
+  isMobileSidebarOpen: boolean;
 
   // Folder & Palace Actions
   createFolder: (name: string) => string;
@@ -251,10 +252,12 @@ interface PalaceState {
   ) => string;
   renamePalace: (id: string, name: string) => void;
   deletePalace: (id: string) => void;
+  deleteProject: (id: string) => void;
   movePalaceToFolder: (palaceId: string, folderId?: string) => void;
   setActivePalace: (id: string) => void;
   togglePalaceManager: (open?: boolean) => void;
   toggleSavePalaceModal: (open?: boolean) => void;
+  toggleMobileSidebar: (open?: boolean) => void;
   savePalaceDetails: (
     palaceId: string,
     name: string,
@@ -361,6 +364,7 @@ export const usePalaceStore = create<PalaceState>()(
       currentRoom: INITIAL_DEMO_PALACE,
       isPalaceManagerOpen: false,
       isSavePalaceModalOpen: false,
+      isMobileSidebarOpen: false,
 
       selectedPin: null,
       pendingCoords: null,
@@ -487,15 +491,16 @@ export const usePalaceStore = create<PalaceState>()(
         set((state) => {
           const remaining = state.palaces.filter((p) => p.id !== id);
           if (remaining.length === 0) {
-            const fallbackDemo = createSamplePalace('es');
             return {
-              palaces: [fallbackDemo],
-              activePalaceId: fallbackDemo.id,
-              currentRoom: fallbackDemo,
+              palaces: [],
+              activePalaceId: '',
+              currentRoom: null,
               selectedPin: null,
               pendingCoords: null,
               isPinModalOpen: false,
               isRecallModalOpen: false,
+              activeExamSession: null,
+              examState: null,
               history: [],
               future: [],
               canUndo: false,
@@ -503,10 +508,12 @@ export const usePalaceStore = create<PalaceState>()(
             };
           }
 
-          const isDeletingActive = state.activePalaceId === id;
+          const isDeletingActive =
+            state.activePalaceId === id || state.currentRoom?.id === id;
           const nextActive = isDeletingActive
             ? remaining[0]
-            : remaining.find((p) => p.id === state.activePalaceId) ?? remaining[0];
+            : remaining.find((p) => p.id === state.activePalaceId) ??
+              remaining[0];
 
           return {
             palaces: remaining,
@@ -515,13 +522,23 @@ export const usePalaceStore = create<PalaceState>()(
             selectedPin: isDeletingActive ? null : state.selectedPin,
             pendingCoords: isDeletingActive ? null : state.pendingCoords,
             isPinModalOpen: isDeletingActive ? false : state.isPinModalOpen,
-            isRecallModalOpen: isDeletingActive ? false : state.isRecallModalOpen,
+            isRecallModalOpen: isDeletingActive
+              ? false
+              : state.isRecallModalOpen,
+            activeExamSession: isDeletingActive
+              ? null
+              : state.activeExamSession,
+            examState: isDeletingActive ? null : state.examState,
             history: isDeletingActive ? [] : state.history,
             future: isDeletingActive ? [] : state.future,
             canUndo: isDeletingActive ? false : state.canUndo,
             canRedo: isDeletingActive ? false : state.canRedo,
           };
         }),
+
+      deleteProject: (id) => {
+        get().deletePalace(id);
+      },
 
       movePalaceToFolder: (palaceId, folderId) =>
         set((state) => {
@@ -568,6 +585,12 @@ export const usePalaceStore = create<PalaceState>()(
         set((state) => ({
           isSavePalaceModalOpen:
             typeof open === 'boolean' ? open : !state.isSavePalaceModalOpen,
+        })),
+
+      toggleMobileSidebar: (open) =>
+        set((state) => ({
+          isMobileSidebarOpen:
+            typeof open === 'boolean' ? open : !state.isMobileSidebarOpen,
         })),
 
       savePalaceDetails: (palaceId, name, folderId) =>
@@ -1864,15 +1887,12 @@ export const usePalaceStore = create<PalaceState>()(
           });
         }
 
-        // Ensure folders & palaces are seeded if migrating from an older localStorage snapshot
-        const hasFolders = Array.isArray(state.folders) && state.folders.length > 0;
-        const hasPalaces = Array.isArray(state.palaces) && state.palaces.length > 0;
-
-        if (!hasFolders) {
+        // Ensure folders & palaces are seeded only if migrating from an older localStorage snapshot
+        if (!Array.isArray(state.folders)) {
           state.createFolder('Oposiciones & Estudio General');
         }
 
-        if (!hasPalaces) {
+        if (!Array.isArray(state.palaces)) {
           const seedPalace = state.currentRoom
             ? {
                 ...state.currentRoom,
@@ -1880,13 +1900,16 @@ export const usePalaceStore = create<PalaceState>()(
               }
             : createSamplePalace('es');
           state.setRoom(seedPalace);
-        } else {
+        } else if (state.palaces.length > 0) {
           const active =
             state.palaces.find((p) => p.id === state.activePalaceId) ??
             state.palaces[0];
           if (active && (!state.currentRoom || state.currentRoom.id !== active.id)) {
             state.setActivePalace(active.id);
           }
+        } else {
+          // User explicitly deleted all palaces: keep clean empty state
+          state.setRoom(null);
         }
       },
     }

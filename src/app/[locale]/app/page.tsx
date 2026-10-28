@@ -69,12 +69,12 @@ export default function WorkspaceAppPage() {
   }
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-col bg-slate-950 text-slate-100">
+    <div className="h-screen w-screen overflow-hidden overflow-x-hidden flex flex-col bg-slate-950 text-slate-100">
       {/* Sleek Single-Row Top Navigation Toolbar */}
       <AppHeader locale={locale} />
 
       {/* 3-Column Workspace Body (Left Sidebar | Central Canvas | Right Drawer) */}
-      <div className="flex-1 flex overflow-hidden relative">
+      <div className="flex-1 flex overflow-hidden overflow-x-hidden relative">
         <AppSidebar />
         <PalaceCanvas />
         <PinModal />

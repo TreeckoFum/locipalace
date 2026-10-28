@@ -39,6 +39,7 @@ export function AppSidebar() {
     folders,
     palaces,
     activePalaceId,
+    isMobileSidebarOpen,
     createFolder,
     renameFolder,
     deleteFolder,
@@ -47,12 +48,20 @@ export function AppSidebar() {
     deletePalace,
     setActivePalace,
     togglePalaceManager,
+    toggleMobileSidebar,
   } = usePalaceStore();
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [collapsedFolderIds, setCollapsedFolderIds] = useState<
     Record<string, boolean>
   >({});
+
+  // Confirmation dialog state before deleting a palace or folder
+  const [pendingDelete, setPendingDelete] = useState<{
+    type: 'palace' | 'folder';
+    id: string;
+    name: string;
+  } | null>(null);
 
   // Inline New Folder State
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
@@ -195,7 +204,7 @@ export function AppSidebar() {
 
   if (isCollapsed) {
     return (
-      <aside className="w-12 border-r border-slate-800 bg-slate-900/40 flex flex-col items-center justify-between py-3 shrink-0 select-none">
+      <aside className="hidden md:flex w-12 border-r border-slate-800 bg-slate-900/40 flex-col items-center justify-between py-3 shrink-0 select-none">
         <div className="flex flex-col items-center gap-3">
           <button
             type="button"
@@ -270,14 +279,119 @@ export function AppSidebar() {
     );
   }
 
+  const confirmDeleteAction = () => {
+    if (!pendingDelete) return;
+    if (pendingDelete.type === 'palace') {
+      deletePalace(pendingDelete.id);
+    } else {
+      deleteFolder(pendingDelete.id);
+    }
+    setPendingDelete(null);
+  };
+
   return (
-    <aside className="w-72 border-r border-slate-800 bg-slate-900/40 flex flex-col justify-between shrink-0 select-none overflow-hidden">
+    <>
+      {/* Mobile Backdrop Overlay (< md) */}
+      {isMobileSidebarOpen && (
+        <div
+          onClick={() => toggleMobileSidebar(false)}
+          className="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-sm md:hidden"
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Confirmation Dialog Modal for Deleting a Palace or Folder */}
+      {pendingDelete && (
+        <div
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="sidebar-delete-confirm-title"
+          aria-describedby="sidebar-delete-confirm-desc"
+          className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4"
+        >
+          <div
+            onClick={() => setPendingDelete(null)}
+            className="fixed inset-0 bg-slate-950/85 backdrop-blur-md"
+          />
+          <div className="relative z-10 w-full max-w-md rounded-t-3xl md:rounded-2xl border border-rose-500/30 bg-slate-900 p-6 shadow-2xl space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-rose-500/30 bg-rose-500/15 text-rose-400">
+                <Trash2 className="h-5 w-5" />
+              </div>
+              <div className="space-y-1">
+                <h3
+                  id="sidebar-delete-confirm-title"
+                  className="text-sm font-bold text-white"
+                >
+                  {pendingDelete.type === 'palace'
+                    ? locale === 'ca'
+                      ? 'Eliminar palau mental'
+                      : locale === 'en'
+                      ? 'Delete memory palace'
+                      : 'Eliminar palacio mental'
+                    : locale === 'ca'
+                    ? 'Eliminar carpeta'
+                    : locale === 'en'
+                    ? 'Delete folder'
+                    : 'Eliminar carpeta'}
+                  : “{pendingDelete.name}”
+                </h3>
+                <p
+                  id="sidebar-delete-confirm-desc"
+                  className="text-xs leading-relaxed text-slate-300"
+                >
+                  {pendingDelete.type === 'palace'
+                    ? locale === 'ca'
+                      ? 'Segur que vols eliminar aquest palau mental? Aquesta acció no es pot desfer.'
+                      : locale === 'en'
+                      ? 'Are you sure you want to delete this memory palace? This action cannot be undone.'
+                      : '¿Seguro que deseas eliminar este palacio mental? Esta acción no se puede deshacer.'
+                    : locale === 'ca'
+                    ? 'Segur que vols eliminar aquesta carpeta? Els palaus que conté passaran a Sense carpeta.'
+                    : locale === 'en'
+                    ? 'Are you sure you want to delete this folder? Its palaces will become unfiled.'
+                    : '¿Seguro que deseas eliminar esta carpeta? Los palacios que contiene pasarán a Sin carpeta.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col-reverse md:flex-row items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setPendingDelete(null)}
+                className="w-full md:w-auto cursor-pointer rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition"
+              >
+                {t.btnCancel}
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeleteAction}
+                className="w-full md:w-auto cursor-pointer inline-flex items-center justify-center gap-1.5 rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-rose-600/25 hover:bg-rose-500 transition"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span>{t.btnDelete}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <aside
+        className={`${
+          isMobileSidebarOpen
+            ? 'fixed inset-y-0 left-0 z-50 flex shadow-2xl'
+            : 'hidden md:flex'
+        } w-72 border-r border-slate-800 bg-slate-900/95 md:bg-slate-900/40 flex-col justify-between shrink-0 select-none overflow-hidden`}
+      >
       {/* Sidebar Header */}
       <div className="flex items-center justify-between border-b border-slate-800/80 px-3.5 py-3">
         <button
           type="button"
-          onClick={() => togglePalaceManager(true)}
-          className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white transition truncate"
+          onClick={() => {
+            toggleMobileSidebar(false);
+            togglePalaceManager(true);
+          }}
+          className="cursor-pointer flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white transition truncate"
           title={t.title}
         >
           <FolderOpen className="h-4 w-4 text-indigo-400 shrink-0" />
@@ -287,9 +401,12 @@ export function AppSidebar() {
         <div className="flex items-center gap-1">
           <button
             type="button"
-            onClick={() => togglePalaceManager(true)}
+            onClick={() => {
+              toggleMobileSidebar(false);
+              togglePalaceManager(true);
+            }}
             title={t.title}
-            className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+            className="cursor-pointer rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition"
           >
             <LayoutGrid className="h-3.5 w-3.5" />
           </button>
@@ -297,9 +414,17 @@ export function AppSidebar() {
             type="button"
             onClick={() => setIsCollapsed(true)}
             title="Collapse Sidebar"
-            className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+            className="hidden md:inline-flex cursor-pointer rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition"
           >
             <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleMobileSidebar(false)}
+            title={t.btnCancel}
+            className="md:hidden cursor-pointer rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+          >
+            <X className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -355,25 +480,31 @@ export function AppSidebar() {
                     <div className="flex items-center gap-0.5">
                       <button
                         type="button"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setEditingFolderId(folder.id);
                           setEditingFolderName(folder.name);
                         }}
-                        className="opacity-0 group-hover:opacity-100 rounded p-1 text-slate-400 hover:bg-slate-700 hover:text-white transition"
+                        className="cursor-pointer opacity-100 md:opacity-0 md:group-hover:opacity-100 rounded p-1 text-slate-400 hover:bg-slate-700 hover:text-white transition"
                         title="Rename"
                       >
                         <Pencil className="h-3 w-3" />
                       </button>
-                      {folders.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => deleteFolder(folder.id)}
-                          className="opacity-0 group-hover:opacity-100 rounded p-1 text-rose-400 hover:bg-rose-500/20 transition"
-                          title={t.btnDelete}
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPendingDelete({
+                            type: 'folder',
+                            id: folder.id,
+                            name: folder.name,
+                          });
+                        }}
+                        className="cursor-pointer opacity-100 md:opacity-0 md:group-hover:opacity-100 rounded p-1 text-slate-400 hover:bg-rose-500/20 hover:text-rose-400 transition"
+                        title={t.btnDelete}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
                       <span className="ml-1 rounded-full bg-slate-800/90 px-1.5 py-0.2 text-[10px] font-mono text-slate-400">
                         {folderPalaces.length}
                       </span>
@@ -418,7 +549,7 @@ export function AppSidebar() {
                             <button
                               type="button"
                               onClick={() => handleSavePalaceRename(palace.id)}
-                              className="rounded bg-emerald-500/20 p-1 text-emerald-300"
+                              className="cursor-pointer rounded bg-emerald-500/20 p-1 text-emerald-300"
                             >
                               <Check className="h-3 w-3" />
                             </button>
@@ -427,8 +558,11 @@ export function AppSidebar() {
                           <>
                             <button
                               type="button"
-                              onClick={() => setActivePalace(palace.id)}
-                              className="flex flex-1 items-center gap-2 text-left truncate"
+                              onClick={() => {
+                                setActivePalace(palace.id);
+                                toggleMobileSidebar(false);
+                              }}
+                              className="cursor-pointer flex flex-1 items-center gap-2 text-left truncate"
                             >
                               <span className="text-xs leading-none">🏛️</span>
                               <span className="truncate">{palace.name}</span>
@@ -442,24 +576,26 @@ export function AppSidebar() {
                                   setEditingPalaceId(palace.id);
                                   setEditingPalaceName(palace.name);
                                 }}
-                                className="opacity-0 group-hover:opacity-100 rounded p-0.5 text-slate-400 hover:text-white transition"
+                                className="cursor-pointer opacity-100 md:opacity-0 md:group-hover:opacity-100 rounded p-1 text-slate-400 hover:bg-slate-700 hover:text-white transition"
                                 title="Rename"
                               >
                                 <Pencil className="h-3 w-3" />
                               </button>
-                              {palaces.length > 1 && (
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    deletePalace(palace.id);
-                                  }}
-                                  className="opacity-0 group-hover:opacity-100 rounded p-0.5 text-rose-400 hover:text-rose-300 transition"
-                                  title={t.btnDelete}
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </button>
-                              )}
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setPendingDelete({
+                                    type: 'palace',
+                                    id: palace.id,
+                                    name: palace.name,
+                                  });
+                                }}
+                                className="cursor-pointer opacity-100 md:opacity-0 md:group-hover:opacity-100 rounded p-1 text-slate-400 hover:bg-rose-500/20 hover:text-rose-400 transition"
+                                title={t.btnDelete}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
                               <span
                                 className={`rounded-md px-1.5 py-0.5 text-[10px] font-mono ${
                                   isActive
@@ -489,25 +625,86 @@ export function AppSidebar() {
             </div>
             {unfiledPalaces.map((palace) => {
               const isActive = palace.id === activePalaceId;
+              const isEditingThisPalace = editingPalaceId === palace.id;
               return (
-                <button
+                <div
                   key={palace.id}
-                  type="button"
-                  onClick={() => setActivePalace(palace.id)}
-                  className={`w-full flex items-center justify-between rounded-xl px-2.5 py-1.5 text-xs transition ${
+                  className={`group flex items-center justify-between rounded-xl px-2.5 py-1.5 text-xs transition ${
                     isActive
                       ? 'border border-indigo-500/50 bg-indigo-500/15 text-white font-semibold'
                       : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'
                   }`}
                 >
-                  <span className="flex items-center gap-2 truncate">
-                    <span>🏛️</span>
-                    <span className="truncate">{palace.name}</span>
-                  </span>
-                  <span className="rounded-md bg-slate-800 px-1.5 py-0.5 text-[10px] font-mono text-slate-400">
-                    {palace.pins.length}
-                  </span>
-                </button>
+                  {isEditingThisPalace ? (
+                    <div className="flex w-full items-center gap-1">
+                      <input
+                        type="text"
+                        autoFocus
+                        value={editingPalaceName}
+                        onChange={(e) => setEditingPalaceName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter')
+                            handleSavePalaceRename(palace.id);
+                          if (e.key === 'Escape') setEditingPalaceId(null);
+                        }}
+                        className="w-full rounded bg-slate-950 px-2 py-0.5 text-xs text-white border border-indigo-500 focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleSavePalaceRename(palace.id)}
+                        className="cursor-pointer rounded bg-emerald-500/20 p-1 text-emerald-300"
+                      >
+                        <Check className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActivePalace(palace.id);
+                          toggleMobileSidebar(false);
+                        }}
+                        className="cursor-pointer flex flex-1 items-center gap-2 text-left truncate"
+                      >
+                        <span>🏛️</span>
+                        <span className="truncate">{palace.name}</span>
+                      </button>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingPalaceId(palace.id);
+                            setEditingPalaceName(palace.name);
+                          }}
+                          className="cursor-pointer opacity-100 md:opacity-0 md:group-hover:opacity-100 rounded p-1 text-slate-400 hover:bg-slate-700 hover:text-white transition"
+                          title="Rename"
+                        >
+                          <Pencil className="h-3 w-3" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPendingDelete({
+                              type: 'palace',
+                              id: palace.id,
+                              name: palace.name,
+                            });
+                          }}
+                          className="cursor-pointer opacity-100 md:opacity-0 md:group-hover:opacity-100 rounded p-1 text-slate-400 hover:bg-rose-500/20 hover:text-rose-400 transition"
+                          title={t.btnDelete}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                        <span className="rounded-md bg-slate-800 px-1.5 py-0.5 text-[10px] font-mono text-slate-400">
+                          {palace.pins.length}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
               );
             })}
           </div>
@@ -690,5 +887,6 @@ export function AppSidebar() {
         </div>
       </div>
     </aside>
+    </>
   );
 }

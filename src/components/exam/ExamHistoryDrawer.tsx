@@ -47,7 +47,7 @@ export function ExamHistoryDrawer() {
   return (
     <AnimatePresence>
       {isExamHistoryOpen && (
-        <div className="fixed inset-0 z-[80] flex justify-end">
+        <div className="fixed inset-0 z-[80] flex items-end md:items-stretch justify-end">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -57,14 +57,16 @@ export function ExamHistoryDrawer() {
             className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm"
           />
 
-          {/* Slide-over Audit Drawer */}
+          {/* Slide-over Audit Drawer (Bottom Sheet on < md, Right Drawer on md+) */}
           <motion.aside
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', stiffness: 320, damping: 30 }}
-            className="relative z-10 flex h-full w-full max-w-3xl flex-col border-l border-slate-800 bg-slate-900 shadow-2xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            className="relative z-10 flex h-[86vh] md:h-full w-full max-w-3xl flex-col rounded-t-3xl md:rounded-none border-t md:border-t-0 md:border-l border-slate-800 bg-slate-900 shadow-2xl"
           >
+            {/* Mobile Drag Handle Pill */}
+            <div className="mx-auto mt-2.5 h-1.5 w-12 shrink-0 rounded-full bg-slate-700 md:hidden" />
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
               <div className="flex items-center gap-3">

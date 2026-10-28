@@ -228,13 +228,15 @@ export function ExamRunnerModal() {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+      <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-slate-950/80 backdrop-blur-md">
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 12 }}
-          className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-indigo-500/40 bg-slate-900/95 shadow-2xl shadow-black"
+          className="relative w-full max-w-2xl max-h-[88vh] overflow-y-auto rounded-t-3xl md:rounded-3xl border border-indigo-500/40 bg-slate-900/95 shadow-2xl shadow-black"
         >
+          {/* Mobile Drag Handle Pill */}
+          <div className="mx-auto mt-2.5 h-1.5 w-12 shrink-0 rounded-full bg-slate-700 md:hidden" />
           {/* ================================================================= */}
           {/* SUMMARY / FINAL SCORE BREAKDOWN VIEW                              */}
           {/* ================================================================= */}
@@ -532,7 +534,7 @@ export function ExamRunnerModal() {
                           !essayDraft.trim() || activeExamSession.isEvaluating
                         }
                         onClick={handleEvaluateEssay}
-                        className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 px-5 py-2.5 text-xs font-bold text-slate-950 shadow-lg hover:from-indigo-400 hover:to-cyan-400 disabled:opacity-40 transition"
+                        className="w-full md:w-auto cursor-pointer inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 px-5 py-2.5 text-xs font-bold text-slate-950 shadow-lg hover:from-indigo-400 hover:to-cyan-400 disabled:opacity-40 transition"
                       >
                         {activeExamSession.isEvaluating ? (
                           <>
@@ -550,7 +552,7 @@ export function ExamRunnerModal() {
                       <button
                         type="button"
                         onClick={advanceExamToNextPin}
-                        className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2.5 text-xs font-extrabold text-slate-950 shadow-lg hover:opacity-95 transition"
+                        className="w-full md:w-auto cursor-pointer inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 px-5 py-2.5 text-xs font-extrabold text-slate-950 shadow-lg hover:opacity-95 transition"
                       >
                         <span>
                           {isLastPin ? examT.finishExam : examT.nextPin}

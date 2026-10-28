@@ -14,6 +14,7 @@ import {
   Home,
   Save,
   History,
+  Menu,
 } from 'lucide-react';
 import { usePalaceStore } from '@/store/usePalaceStore';
 import { LanguageSelector } from '@/components/LanguageSelector';
@@ -48,6 +49,7 @@ export function AppHeader({ locale }: AppHeaderProps) {
     togglePalaceManager,
     toggleSavePalaceModal,
     toggleExamHistoryDrawer,
+    toggleMobileSidebar,
     undo,
     redo,
   } = usePalaceStore();
@@ -94,17 +96,27 @@ export function AppHeader({ locale }: AppHeaderProps) {
       : computedRetention;
 
   return (
-    <header className="h-14 border-b border-slate-800 bg-slate-950 px-4 flex items-center justify-between gap-4 shrink-0 z-40">
-      {/* LEFT: Brand Logo + Breadcrumb (Folder / Palace Name + Inline Rename) + Save + Undo/Redo */}
-      <div className="flex items-center gap-3 min-w-0">
+    <header className="h-14 border-b border-slate-800 bg-slate-950 px-2.5 sm:px-4 flex items-center justify-between gap-2 md:gap-4 shrink-0 z-40 overflow-x-hidden">
+      {/* LEFT: Mobile Sidebar Drawer Toggle + Brand Logo + Breadcrumb + Save + Undo/Redo */}
+      <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
+        <button
+          type="button"
+          onClick={() => toggleMobileSidebar()}
+          title={t.nav.myPalaces}
+          aria-label={t.nav.myPalaces}
+          className="md:hidden inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/90 text-slate-300 hover:bg-slate-800 hover:text-white transition"
+        >
+          <Menu className="h-4 w-4 text-indigo-400" />
+        </button>
+
         <Link
           href={`/${locale}`}
-          className="text-base font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent hover:opacity-90 transition shrink-0"
+          className="hidden sm:inline text-base font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent hover:opacity-90 transition shrink-0"
         >
           {t.nav.brand}
         </Link>
 
-        <span className="text-slate-700">/</span>
+        <span className="hidden sm:inline text-slate-700">/</span>
 
         {/* Breadcrumb: Folder / Palace Name */}
         <div className="flex items-center gap-1.5 text-xs min-w-0">
@@ -133,7 +145,7 @@ export function AppHeader({ locale }: AppHeaderProps) {
                   if (e.key === 'Escape') setIsEditingHeaderTitle(false);
                 }}
                 autoFocus
-                className="rounded-lg border border-indigo-500 bg-slate-900 px-2 py-0.5 text-xs font-bold text-white focus:outline-none"
+                className="w-28 sm:w-auto rounded-lg border border-indigo-500 bg-slate-900 px-2 py-0.5 text-xs font-bold text-white focus:outline-none"
               />
               <button
                 type="button"
@@ -145,7 +157,7 @@ export function AppHeader({ locale }: AppHeaderProps) {
             </div>
           ) : (
             <div className="flex items-center gap-1 min-w-0">
-              <span className="font-bold text-white truncate max-w-[180px] sm:max-w-[220px]">
+              <span className="font-bold text-white truncate max-w-[105px] sm:max-w-[220px]">
                 🏛️ {currentRoom ? currentRoom.name : t.app.manager.newPalaceBtn}
               </span>
               {currentRoom && (
@@ -166,15 +178,17 @@ export function AppHeader({ locale }: AppHeaderProps) {
         </div>
 
         {/* Save Palace Button */}
-        <button
-          type="button"
-          onClick={() => toggleSavePalaceModal(true)}
-          className="flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1 text-xs font-semibold text-indigo-300 hover:bg-indigo-500/20 hover:border-indigo-500/50 transition-colors shrink-0"
-          title={t.nav.savePalaceTitle || 'Guardar Palacio y organizar carpeta'}
-        >
-          <Save className="h-3.5 w-3.5" />
-          <span>{t.nav.saveBtn || 'Guardar'}</span>
-        </button>
+        {currentRoom && (
+          <button
+            type="button"
+            onClick={() => toggleSavePalaceModal(true)}
+            className="flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2 sm:px-2.5 py-1 text-xs font-semibold text-indigo-300 hover:bg-indigo-500/20 hover:border-indigo-500/50 transition-colors shrink-0"
+            title={t.nav.savePalaceTitle || 'Guardar Palacio y organizar carpeta'}
+          >
+            <Save className="h-3.5 w-3.5" />
+            <span className="hidden md:inline">{t.nav.saveBtn || 'Guardar'}</span>
+          </button>
+        )}
 
         {/* Compact Undo / Redo */}
         <div className="hidden md:flex items-center rounded-lg border border-slate-800 bg-slate-900/70 p-0.5 ml-1">

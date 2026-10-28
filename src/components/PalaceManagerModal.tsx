@@ -64,9 +64,29 @@ export function PalaceManagerModal() {
   );
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  // Confirmation Dialog State before Deleting Palace or Folder
+  const [pendingDelete, setPendingDelete] = useState<{
+    type: 'palace' | 'folder';
+    id: string;
+    name: string;
+  } | null>(null);
+
   if (!isPalaceManagerOpen) {
     return null;
   }
+
+  const handleConfirmDelete = () => {
+    if (!pendingDelete) return;
+    if (pendingDelete.type === 'palace') {
+      deletePalace(pendingDelete.id);
+    } else {
+      if (selectedFolderFilter === pendingDelete.id) {
+        setSelectedFolderFilter('ALL');
+      }
+      deleteFolder(pendingDelete.id);
+    }
+    setPendingDelete(null);
+  };
 
   const filteredPalaces = palaces.filter((p) => {
     if (selectedFolderFilter === 'ALL') return true;
@@ -163,7 +183,7 @@ export function PalaceManagerModal() {
   return (
     <AnimatePresence>
       {isPalaceManagerOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-6">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -173,14 +193,92 @@ export function PalaceManagerModal() {
             className="fixed inset-0 bg-slate-950/85 backdrop-blur-md"
           />
 
-          {/* Modal Container */}
+          {/* Confirmation Dialog Modal */}
+          {pendingDelete && (
+            <div
+              role="alertdialog"
+              aria-modal="true"
+              aria-labelledby="manager-delete-confirm-title"
+              aria-describedby="manager-delete-confirm-desc"
+              className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4"
+            >
+              <div
+                onClick={() => setPendingDelete(null)}
+                className="fixed inset-0 bg-slate-950/85 backdrop-blur-md"
+              />
+              <div className="relative z-10 w-full max-w-md rounded-t-3xl md:rounded-2xl border border-rose-500/30 bg-slate-900 p-6 shadow-2xl space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-rose-500/30 bg-rose-500/15 text-rose-400">
+                    <Trash2 className="h-5 w-5" />
+                  </div>
+                  <div className="space-y-1">
+                    <h3
+                      id="manager-delete-confirm-title"
+                      className="text-sm font-bold text-white"
+                    >
+                      {pendingDelete.type === 'palace'
+                        ? locale === 'ca'
+                          ? 'Eliminar palau mental'
+                          : locale === 'en'
+                          ? 'Delete memory palace'
+                          : 'Eliminar palacio mental'
+                        : locale === 'ca'
+                        ? 'Eliminar carpeta'
+                        : locale === 'en'
+                        ? 'Delete folder'
+                        : 'Eliminar carpeta'}
+                      : “{pendingDelete.name}”
+                    </h3>
+                    <p
+                      id="manager-delete-confirm-desc"
+                      className="text-xs leading-relaxed text-slate-300"
+                    >
+                      {pendingDelete.type === 'palace'
+                        ? locale === 'ca'
+                          ? 'Segur que vols eliminar aquest palau mental? Aquesta acció no es pot desfer.'
+                          : locale === 'en'
+                          ? 'Are you sure you want to delete this memory palace? This action cannot be undone.'
+                          : '¿Seguro que deseas eliminar este palacio mental? Esta acción no se puede deshacer.'
+                        : locale === 'ca'
+                        ? 'Segur que vols eliminar aquesta carpeta? Els palaus que conté passaran a Sense carpeta.'
+                        : locale === 'en'
+                        ? 'Are you sure you want to delete this folder? Its palaces will become unfiled.'
+                        : '¿Seguro que deseas eliminar esta carpeta? Los palacios que contiene pasarán a Sin carpeta.'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col-reverse md:flex-row items-center justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setPendingDelete(null)}
+                    className="w-full md:w-auto cursor-pointer rounded-xl border border-slate-700 bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-700 hover:text-white transition"
+                  >
+                    {t.btnCancel}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleConfirmDelete}
+                    className="w-full md:w-auto cursor-pointer inline-flex items-center justify-center gap-1.5 rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-rose-600/25 hover:bg-rose-500 transition"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    <span>{t.btnDelete}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Modal Container (Bottom Sheet on mobile < md, Centered Dialog on md+) */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 12 }}
             transition={{ type: 'spring', stiffness: 340, damping: 28 }}
-            className="relative z-10 flex h-[82vh] w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-slate-800 bg-slate-900/95 shadow-2xl shadow-black"
+            className="relative z-10 flex h-[88vh] md:h-[82vh] w-full max-w-5xl flex-col overflow-hidden rounded-t-3xl md:rounded-3xl border border-slate-800 bg-slate-900/95 shadow-2xl shadow-black"
           >
+            {/* Mobile Drag Handle Pill */}
+            <div className="mx-auto mt-2.5 h-1.5 w-12 shrink-0 rounded-full bg-slate-700 md:hidden" />
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
               <div className="flex items-center gap-3">
@@ -338,26 +436,25 @@ export function PalaceManagerModal() {
                                     setEditingFolderName(folder.name);
                                   }}
                                   title="Renombrar carpeta"
-                                  className="opacity-0 group-hover:opacity-100 rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+                                  className="cursor-pointer opacity-100 md:opacity-0 md:group-hover:opacity-100 rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition"
                                 >
                                   <Pencil className="h-3 w-3" />
                                 </button>
-                                {folders.length > 1 && (
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      if (selectedFolderFilter === folder.id) {
-                                        setSelectedFolderFilter('ALL');
-                                      }
-                                      deleteFolder(folder.id);
-                                    }}
-                                    title="Eliminar carpeta"
-                                    className="opacity-0 group-hover:opacity-100 rounded p-1 text-rose-400 hover:bg-rose-500/20 transition"
-                                  >
-                                    <Trash2 className="h-3 w-3" />
-                                  </button>
-                                )}
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setPendingDelete({
+                                      type: 'folder',
+                                      id: folder.id,
+                                      name: folder.name,
+                                    });
+                                  }}
+                                  title="Eliminar carpeta"
+                                  className="cursor-pointer opacity-100 md:opacity-0 md:group-hover:opacity-100 rounded p-1 text-slate-400 hover:bg-rose-500/20 hover:text-rose-400 transition"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </button>
                                 <span className="ml-1 rounded-full bg-slate-900 px-2 py-0.5 text-[10px] text-slate-300">
                                   {count}
                                 </span>
@@ -498,7 +595,26 @@ export function PalaceManagerModal() {
                   )}
                 </AnimatePresence>
 
-                {/* Palace Cards Grid */}
+                {/* Palace Cards Grid or Empty State */}
+                {filteredPalaces.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-800 bg-slate-950/60 p-8 text-center space-y-3">
+                    <FolderOpen className="h-10 w-10 text-indigo-400/70" />
+                    <p className="text-sm font-bold text-white">
+                      {t.newPalaceBtn}
+                    </p>
+                    <p className="text-xs text-slate-400 max-w-sm">
+                      {t.subtitle}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setIsCreatingPalace(true)}
+                      className="w-full md:w-auto cursor-pointer inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 px-4 py-2.5 text-xs font-bold text-slate-950 shadow-lg hover:from-indigo-400 hover:to-cyan-400 transition"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>{t.newPalaceBtn}</span>
+                    </button>
+                  </div>
+                ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {filteredPalaces.map((palace) => {
                     const isActive = palace.id === activePalaceId;
@@ -594,20 +710,28 @@ export function PalaceManagerModal() {
                                 <div className="flex items-center gap-1 shrink-0">
                                   <button
                                     type="button"
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                      e.stopPropagation();
                                       setEditingPalaceId(palace.id);
                                       setEditingPalaceName(palace.name);
                                     }}
                                     title={palace.name}
-                                    className="rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+                                    className="cursor-pointer rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition"
                                   >
                                     <Pencil className="h-3.5 w-3.5" />
                                   </button>
                                   <button
                                     type="button"
-                                    onClick={() => deletePalace(palace.id)}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setPendingDelete({
+                                        type: 'palace',
+                                        id: palace.id,
+                                        name: palace.name,
+                                      });
+                                    }}
                                     title={t.btnDelete}
-                                    className="rounded-lg p-1 text-rose-400 hover:bg-rose-500/20 transition"
+                                    className="cursor-pointer rounded-lg p-1 text-slate-400 hover:bg-rose-500/20 hover:text-rose-400 transition"
                                   >
                                     <Trash2 className="h-3.5 w-3.5" />
                                   </button>
@@ -667,6 +791,7 @@ export function PalaceManagerModal() {
                     );
                   })}
                 </div>
+                )}
               </div>
             </div>
           </motion.div>
