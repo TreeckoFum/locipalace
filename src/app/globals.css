@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.high-quality-image {
+  image-rendering: high-quality;
+  image-rendering: -webkit-optimize-contrast;
+}

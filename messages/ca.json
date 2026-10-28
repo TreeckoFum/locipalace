@@ -1,0 +1,13 @@
+{
+  "Common": {
+    "loading": "Carregant...",
+    "save": "Desar",
+    "cancel": "Cancel·lar"
+  },
+  "Modes": {
+    "build": "Construir",
+    "study": "Estudiar",
+    "recall": "Memòria",
+    "exam": "Examen"
+  }
+}

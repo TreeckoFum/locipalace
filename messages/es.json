@@ -1,0 +1,13 @@
+{
+  "Common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar"
+  },
+  "Modes": {
+    "build": "Construir",
+    "study": "Estudiar",
+    "recall": "Memoria",
+    "exam": "Examen"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "Common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "Modes": {
+    "build": "Build",
+    "study": "Study",
+    "recall": "Recall",
+    "exam": "Exam"
+  }
+}
