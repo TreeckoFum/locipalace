@@ -204,7 +204,7 @@ export function AppSidebar() {
 
   if (isCollapsed) {
     return (
-      <aside className="hidden md:flex w-12 border-r border-slate-800 bg-slate-900/40 flex-col items-center justify-between py-3 shrink-0 select-none">
+      <aside className="hidden lg:flex w-12 border-r border-slate-800 bg-slate-900/40 flex-col items-center justify-between py-3 shrink-0 select-none">
         <div className="flex flex-col items-center gap-3">
           <button
             type="button"
@@ -291,11 +291,11 @@ export function AppSidebar() {
 
   return (
     <>
-      {/* Mobile Backdrop Overlay (< md) */}
+      {/* Mobile & Landscape Tablet Backdrop Overlay (< lg) */}
       {isMobileSidebarOpen && (
         <div
           onClick={() => toggleMobileSidebar(false)}
-          className="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-sm lg:hidden"
           aria-hidden="true"
         />
       )}
@@ -380,8 +380,8 @@ export function AppSidebar() {
         className={`${
           isMobileSidebarOpen
             ? 'fixed inset-y-0 left-0 z-50 flex shadow-2xl'
-            : 'hidden md:flex'
-        } w-72 border-r border-slate-800 bg-slate-900/95 md:bg-slate-900/40 flex-col justify-between shrink-0 select-none overflow-hidden`}
+            : 'hidden lg:flex'
+        } w-72 border-r border-slate-800 bg-slate-900/95 lg:bg-slate-900/40 flex-col justify-between shrink-0 select-none overflow-hidden`}
       >
       {/* Sidebar Header */}
       <div className="flex items-center justify-between border-b border-slate-800/80 px-3.5 py-3">
@@ -414,7 +414,7 @@ export function AppSidebar() {
             type="button"
             onClick={() => setIsCollapsed(true)}
             title="Collapse Sidebar"
-            className="hidden md:inline-flex cursor-pointer rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+            className="hidden lg:inline-flex cursor-pointer rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -422,7 +422,7 @@ export function AppSidebar() {
             type="button"
             onClick={() => toggleMobileSidebar(false)}
             title={t.btnCancel}
-            className="md:hidden cursor-pointer rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+            className="lg:hidden cursor-pointer rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition"
           >
             <X className="h-4 w-4" />
           </button>

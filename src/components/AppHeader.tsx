@@ -96,128 +96,157 @@ export function AppHeader({ locale }: AppHeaderProps) {
       : computedRetention;
 
   return (
-    <header className="h-14 border-b border-slate-800 bg-slate-950 px-2.5 sm:px-4 flex items-center justify-between gap-2 md:gap-4 shrink-0 z-40 overflow-x-hidden">
-      {/* LEFT: Mobile Sidebar Drawer Toggle + Brand Logo + Breadcrumb + Save + Undo/Redo */}
-      <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
-        <button
-          type="button"
-          onClick={() => toggleMobileSidebar()}
-          title={t.nav.myPalaces}
-          aria-label={t.nav.myPalaces}
-          className="md:hidden inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/90 text-slate-300 hover:bg-slate-800 hover:text-white transition"
-        >
-          <Menu className="h-4 w-4 text-indigo-400" />
-        </button>
-
-        <Link
-          href={`/${locale}`}
-          className="hidden sm:inline text-base font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent hover:opacity-90 transition shrink-0"
-        >
-          {t.nav.brand}
-        </Link>
-
-        <span className="hidden sm:inline text-slate-700">/</span>
-
-        {/* Breadcrumb: Folder / Palace Name */}
-        <div className="flex items-center gap-1.5 text-xs min-w-0">
+    <header className="border-b border-slate-800 bg-slate-950 px-2.5 sm:px-4 py-2 md:py-0 md:h-14 flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-4 shrink-0 z-40 overflow-x-hidden">
+      <div className="flex items-center justify-between gap-2 w-full md:w-auto min-w-0">
+        {/* LEFT: Mobile/Landscape Sidebar Drawer Toggle (< lg) + Brand Logo + Breadcrumb + Save + Undo/Redo */}
+        <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
           <button
             type="button"
-            onClick={() => togglePalaceManager(true)}
-            className="hidden sm:inline-flex items-center gap-1 rounded-lg px-2 py-1 text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition truncate max-w-[160px]"
+            onClick={() => toggleMobileSidebar()}
             title={t.nav.myPalaces}
+            aria-label={t.nav.myPalaces}
+            className="lg:hidden cursor-pointer inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/90 text-slate-300 hover:bg-slate-800 hover:text-white transition"
           >
-            <span>📁</span>
-            <span className="truncate">
-              {activeFolder?.name || t.app.manager.noFolderOption}
-            </span>
+            <Menu className="h-4 w-4 text-indigo-400" />
           </button>
+
+          <Link
+            href={`/${locale}`}
+            className="hidden sm:inline text-base font-extrabold tracking-tight bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent hover:opacity-90 transition shrink-0"
+          >
+            {t.nav.brand}
+          </Link>
 
           <span className="hidden sm:inline text-slate-700">/</span>
 
-          {isEditingHeaderTitle && currentRoom ? (
-            <div className="flex items-center gap-1">
-              <input
-                type="text"
-                value={headerTitleDraft}
-                onChange={(e) => setHeaderTitleDraft(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSaveHeaderTitle();
-                  if (e.key === 'Escape') setIsEditingHeaderTitle(false);
-                }}
-                autoFocus
-                className="w-28 sm:w-auto rounded-lg border border-indigo-500 bg-slate-900 px-2 py-0.5 text-xs font-bold text-white focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={handleSaveHeaderTitle}
-                className="rounded-lg bg-emerald-500/20 p-1 text-emerald-300 hover:bg-emerald-500/30"
-              >
-                <Check className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1 min-w-0">
-              <span className="font-bold text-white truncate max-w-[105px] sm:max-w-[220px]">
-                🏛️ {currentRoom ? currentRoom.name : t.app.manager.newPalaceBtn}
+          {/* Breadcrumb: Folder / Palace Name */}
+          <div className="flex items-center gap-1.5 text-xs min-w-0">
+            <button
+              type="button"
+              onClick={() => togglePalaceManager(true)}
+              className="hidden xl:inline-flex items-center gap-1 rounded-lg px-2 py-1 text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition truncate max-w-[160px]"
+              title={t.nav.myPalaces}
+            >
+              <span>📁</span>
+              <span className="truncate">
+                {activeFolder?.name || t.app.manager.noFolderOption}
               </span>
-              {currentRoom && (
+            </button>
+
+            <span className="hidden xl:inline text-slate-700">/</span>
+
+            {isEditingHeaderTitle && currentRoom ? (
+              <div className="flex items-center gap-1">
+                <input
+                  type="text"
+                  value={headerTitleDraft}
+                  onChange={(e) => setHeaderTitleDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSaveHeaderTitle();
+                    if (e.key === 'Escape') setIsEditingHeaderTitle(false);
+                  }}
+                  autoFocus
+                  className="w-28 sm:w-auto rounded-lg border border-indigo-500 bg-slate-900 px-2 py-0.5 text-xs font-bold text-white focus:outline-none"
+                />
                 <button
                   type="button"
-                  onClick={() => {
-                    setHeaderTitleDraft(currentRoom.name);
-                    setIsEditingHeaderTitle(true);
-                  }}
-                  title="Rename"
-                  className="rounded-md p-1 text-slate-500 hover:bg-slate-800 hover:text-white transition shrink-0"
+                  onClick={handleSaveHeaderTitle}
+                  className="rounded-lg bg-emerald-500/20 p-1 text-emerald-300 hover:bg-emerald-500/30"
                 >
-                  <Pencil className="h-3 w-3" />
+                  <Check className="h-3.5 w-3.5" />
                 </button>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 min-w-0">
+                <span className="font-bold text-white truncate max-w-[130px] sm:max-w-[200px]">
+                  🏛️ {currentRoom ? currentRoom.name : t.app.manager.newPalaceBtn}
+                </span>
+                {currentRoom && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setHeaderTitleDraft(currentRoom.name);
+                      setIsEditingHeaderTitle(true);
+                    }}
+                    title="Rename"
+                    className="rounded-md p-1 text-slate-500 hover:bg-slate-800 hover:text-white transition shrink-0"
+                  >
+                    <Pencil className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Save Palace Button */}
+          {currentRoom && (
+            <button
+              type="button"
+              onClick={() => toggleSavePalaceModal(true)}
+              className="flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2 sm:px-2.5 py-1 text-xs font-semibold text-indigo-300 hover:bg-indigo-500/20 hover:border-indigo-500/50 transition-colors shrink-0"
+              title={t.nav.savePalaceTitle || 'Guardar Palacio y organizar carpeta'}
+            >
+              <Save className="h-3.5 w-3.5" />
+              <span className="hidden lg:inline">{t.nav.saveBtn || 'Guardar'}</span>
+            </button>
           )}
+
+          {/* Compact Undo / Redo */}
+          <div className="hidden lg:flex items-center rounded-lg border border-slate-800 bg-slate-900/70 p-0.5 ml-1">
+            <button
+              type="button"
+              onClick={undo}
+              disabled={!canUndo}
+              title="Undo (Ctrl+Z)"
+              className={`rounded p-1 transition ${
+                canUndo
+                  ? 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                  : 'text-slate-600 cursor-not-allowed'
+              }`}
+            >
+              <Undo2 className="h-3.5 w-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={redo}
+              disabled={!canRedo}
+              title="Redo (Ctrl+Y)"
+              className={`rounded p-1 transition ${
+                canRedo
+                  ? 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                  : 'text-slate-600 cursor-not-allowed'
+              }`}
+            >
+              <Redo2 className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
 
-        {/* Save Palace Button */}
-        {currentRoom && (
+        {/* Mobile Right Controls (< md): History + Language + Home on Top Row */}
+        <div className="flex md:hidden items-center gap-1.5 shrink-0">
           <button
             type="button"
-            onClick={() => toggleSavePalaceModal(true)}
-            className="flex items-center gap-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2 sm:px-2.5 py-1 text-xs font-semibold text-indigo-300 hover:bg-indigo-500/20 hover:border-indigo-500/50 transition-colors shrink-0"
-            title={t.nav.savePalaceTitle || 'Guardar Palacio y organizar carpeta'}
+            onClick={() => toggleExamHistoryDrawer(true)}
+            title={t.app.exam.historyTitle}
+            className="inline-flex items-center gap-1 rounded-xl border border-slate-800 bg-slate-900/90 px-2 py-1 text-xs font-semibold text-slate-300 hover:border-indigo-500/40 hover:bg-slate-800 hover:text-white transition"
           >
-            <Save className="h-3.5 w-3.5" />
-            <span className="hidden md:inline">{t.nav.saveBtn || 'Guardar'}</span>
+            <History className="h-3.5 w-3.5 text-indigo-400" />
+            {examHistory.length > 0 && (
+              <span className="rounded-full bg-indigo-500/20 px-1.5 py-0.2 font-mono text-[10px] font-bold text-indigo-300">
+                {examHistory.length}
+              </span>
+            )}
           </button>
-        )}
 
-        {/* Compact Undo / Redo */}
-        <div className="hidden md:flex items-center rounded-lg border border-slate-800 bg-slate-900/70 p-0.5 ml-1">
-          <button
-            type="button"
-            onClick={undo}
-            disabled={!canUndo}
-            title="Undo (Ctrl+Z)"
-            className={`rounded p-1 transition ${
-              canUndo
-                ? 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                : 'text-slate-600 cursor-not-allowed'
-            }`}
+          <LanguageSelector />
+
+          <Link
+            href={`/${locale}`}
+            title={t.nav.backToHome}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/90 text-slate-300 hover:border-slate-700 hover:bg-slate-800 hover:text-white transition"
           >
-            <Undo2 className="h-3.5 w-3.5" />
-          </button>
-          <button
-            type="button"
-            onClick={redo}
-            disabled={!canRedo}
-            title="Redo (Ctrl+Y)"
-            className={`rounded p-1 transition ${
-              canRedo
-                ? 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                : 'text-slate-600 cursor-not-allowed'
-            }`}
-          >
-            <Redo2 className="h-3.5 w-3.5" />
-          </button>
+            <Home className="h-4 w-4 text-cyan-400" />
+          </Link>
         </div>
       </div>
 
@@ -225,7 +254,7 @@ export function AppHeader({ locale }: AppHeaderProps) {
       <div
         role="tablist"
         aria-label="LociPalace Study Modes"
-        className="flex items-center rounded-xl border border-slate-800 bg-slate-900/90 p-1 shrink-0"
+        className="w-full md:w-auto overflow-x-auto no-scrollbar flex items-center flex-nowrap rounded-xl border border-slate-800 bg-slate-900/90 p-1 shrink-0"
       >
         {modes.map((m) => {
           const Icon = m.icon;
@@ -237,24 +266,24 @@ export function AppHeader({ locale }: AppHeaderProps) {
               role="tab"
               aria-selected={isActive}
               onClick={() => setStudyMode(m.id)}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-semibold transition-all ${
+              className={`flex-1 md:flex-initial shrink-0 whitespace-nowrap flex items-center justify-center gap-1.5 rounded-lg px-2.5 sm:px-3 py-1 text-xs font-semibold transition-all ${
                 isActive
                   ? 'bg-gradient-to-r from-indigo-500 to-cyan-500 text-slate-950 shadow-sm shadow-indigo-500/20'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
               }`}
             >
-              <Icon className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">{m.label}</span>
+              <Icon className="h-3.5 w-3.5 shrink-0" />
+              <span>{m.label}</span>
             </button>
           );
         })}
       </div>
 
-      {/* RIGHT: Memory Health Score Badge + Exam History Button + LanguageSelector (EXACTLY ONCE) + Home Link */}
-      <div className="flex items-center gap-2.5 shrink-0">
+      {/* RIGHT (md+): Memory Health Score Badge + Exam History Button + LanguageSelector + Home Link */}
+      <div className="hidden md:flex items-center gap-2.5 shrink-0">
         <div
           title={`${masteredCount}/${totalPins} ${t.nav.mastered}`}
-          className="hidden lg:inline-flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/90 px-3 py-1 text-xs font-semibold"
+          className="hidden xl:inline-flex items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/90 px-3 py-1 text-xs font-semibold"
         >
           <Brain className="h-3.5 w-3.5 text-emerald-400" />
           <span className="text-slate-400">{t.nav.retentionScore}:</span>
@@ -281,7 +310,7 @@ export function AppHeader({ locale }: AppHeaderProps) {
           className="inline-flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-900/90 px-2.5 py-1 text-xs font-semibold text-slate-300 hover:border-indigo-500/40 hover:bg-slate-800 hover:text-white transition"
         >
           <History className="h-3.5 w-3.5 text-indigo-400" />
-          <span className="hidden md:inline">{t.app.exam.viewHistory}</span>
+          <span className="hidden lg:inline">{t.app.exam.viewHistory}</span>
           {examHistory.length > 0 && (
             <span className="rounded-full bg-indigo-500/20 px-1.5 py-0.2 font-mono text-[10px] font-bold text-indigo-300">
               {examHistory.length}

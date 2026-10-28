@@ -494,7 +494,7 @@ export function PalaceCanvas() {
   return (
     <div
       style={{ touchAction: 'manipulation' }}
-      className="flex-1 h-full w-full relative overflow-hidden bg-slate-950 flex items-center justify-center p-2 sm:p-4 touch-manipulation"
+      className="flex-1 h-full w-full relative overflow-hidden bg-slate-950 flex flex-col items-center justify-between md:justify-center p-0 md:p-4 touch-manipulation"
     >
       {/* Hidden File Input for Quick Room Photo Upload */}
       <input
@@ -505,6 +505,7 @@ export function PalaceCanvas() {
         className="hidden"
       />
 
+      <div className="w-full flex-1 flex flex-col items-center justify-center gap-2 px-2 py-2 md:p-0 min-h-0">
       {/* ===================================================================== */}
       {/* TOP FLOATING MODE BANNER / EXAM PHASE 1 PROMPT BAR                    */}
       {/* ===================================================================== */}
@@ -512,7 +513,7 @@ export function PalaceCanvas() {
       totalPins > 0 &&
       activeExamSession &&
       activeExamSession.currentPhase === 'PHASE_1' ? (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 w-full max-w-2xl rounded-2xl border border-indigo-500/50 bg-slate-900/95 px-5 py-3.5 backdrop-blur-xl shadow-2xl">
+        <div className="w-full max-w-2xl md:absolute md:top-4 md:left-1/2 md:-translate-x-1/2 z-30 rounded-2xl border border-indigo-500/50 bg-slate-900/95 px-4 py-2.5 md:px-5 md:py-3.5 backdrop-blur-xl shadow-2xl shrink-0">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-indigo-400">
@@ -561,9 +562,9 @@ export function PalaceCanvas() {
           </div>
         </div>
       ) : (
-        <div className="pointer-events-none absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 rounded-full border border-slate-800/80 bg-slate-900/75 px-4 py-1.5 text-[11px] font-medium text-slate-300 backdrop-blur-md shadow-lg">
+        <div className="pointer-events-none md:absolute md:top-4 md:left-1/2 md:-translate-x-1/2 z-20 flex items-center justify-center gap-2 rounded-full border border-slate-800/80 bg-slate-900/80 px-3.5 py-1.5 text-[11px] font-medium text-slate-300 backdrop-blur-md shadow-lg max-w-full shrink-0 text-center">
           <span
-            className={`h-2 w-2 rounded-full ${
+            className={`h-2 w-2 shrink-0 rounded-full ${
               studyMode === 'build'
                 ? 'bg-cyan-400 animate-pulse'
                 : studyMode === 'study'
@@ -571,7 +572,7 @@ export function PalaceCanvas() {
                 : 'bg-amber-400 animate-pulse'
             }`}
           />
-          <span>
+          <span className="truncate">
             {studyMode === 'build' && t.app.canvas.clickToPlacePin}
             {studyMode === 'study' && t.app.studyWalkthrough.keyboardHint}
             {studyMode === 'memory' && t.app.canvas.recallModeNotice}
@@ -587,12 +588,12 @@ export function PalaceCanvas() {
         onClick={handleCanvasClick}
         style={{
           aspectRatio: ratio,
-          maxHeight: 'calc(100vh - 115px)',
-          maxWidth: `min(100%, calc((100vh - 115px) * ${ratio}))`,
+          maxHeight: 'calc(100vh - 150px)',
+          maxWidth: `min(100%, calc((100vh - 150px) * ${ratio}))`,
           width: '100%',
           touchAction: 'manipulation',
         }}
-        className={`relative mx-auto rounded-2xl border border-slate-800 bg-slate-950 shadow-2xl select-none overflow-visible touch-manipulation ${
+        className={`relative mx-auto w-full rounded-2xl border border-slate-800 bg-slate-950 shadow-2xl select-none overflow-visible touch-manipulation ${
           studyMode === 'build' ? 'cursor-crosshair' : 'cursor-default'
         }`}
       >
@@ -605,7 +606,7 @@ export function PalaceCanvas() {
             imageRendering:
               'high-quality' as React.CSSProperties['imageRendering'],
           }}
-          className="high-quality-image w-full h-full max-h-[calc(100vh-115px)] object-contain rounded-2xl pointer-events-none select-none"
+          className="high-quality-image w-full h-full max-h-[calc(100vh-150px)] object-contain rounded-2xl pointer-events-none select-none"
         />
 
         {/* Subtle vignette for pin contrast */}
@@ -887,6 +888,7 @@ export function PalaceCanvas() {
           );
         })}
       </div>
+      </div>
 
       {/* ===================================================================== */}
       {/* 3-STAGE MASTER EXAM RUNNER MODAL (PHASE 2, PHASE 3 & SUMMARY)         */}
@@ -894,10 +896,10 @@ export function PalaceCanvas() {
       <ExamRunnerModal />
 
       {/* ===================================================================== */}
-      {/* BOTTOM FLOATING CONTROLLER PILL (STUDY WALKTHROUGH OR BUILD TOOLS)     */}
+      {/* BOTTOM CONTROLLER (DOCK BAR ON MOBILE < md / FLOATING PILL ON md+)     */}
       {/* ===================================================================== */}
       {studyMode === 'study' && totalPins > 0 ? (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 rounded-full border border-indigo-500/40 bg-slate-900/90 px-4 py-2 backdrop-blur-xl shadow-2xl">
+        <div className="w-full shrink-0 border-t border-slate-800 bg-slate-900/95 px-3 py-2.5 pb-safe md:w-auto md:border md:border-indigo-500/40 md:bg-slate-900/90 md:rounded-full md:px-4 md:py-2 md:pb-2 md:absolute md:bottom-4 md:left-1/2 md:-translate-x-1/2 z-30 flex items-center justify-center gap-3 backdrop-blur-xl shadow-2xl">
           <button
             type="button"
             onClick={prevStudyPin}
@@ -923,34 +925,34 @@ export function PalaceCanvas() {
           </button>
         </div>
       ) : (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex flex-wrap items-center justify-center gap-2 rounded-full border border-slate-700/80 bg-slate-900/85 px-3.5 py-1.5 backdrop-blur-xl shadow-2xl">
+        <div className="w-full shrink-0 border-t border-slate-800 bg-slate-900/95 px-2 py-2.5 pb-safe md:w-auto md:border md:border-slate-700/80 md:bg-slate-900/85 md:rounded-full md:px-3.5 md:py-1.5 md:pb-1.5 md:absolute md:bottom-4 md:left-1/2 md:-translate-x-1/2 z-30 flex items-center justify-around md:justify-center gap-1.5 md:gap-2 overflow-x-auto no-scrollbar flex-nowrap backdrop-blur-xl shadow-2xl">
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-white transition"
+            className="inline-flex items-center gap-1.5 rounded-full px-2.5 md:px-3 py-1 text-xs font-semibold text-slate-200 hover:bg-slate-800 hover:text-white transition whitespace-nowrap shrink-0"
           >
-            <Upload className="h-3.5 w-3.5 text-cyan-400" />
+            <Upload className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
             <span>{t.app.canvas.uploadPhoto}</span>
           </button>
 
-          <div className="h-4 w-px bg-slate-700/80" />
+          <div className="h-4 w-px bg-slate-700/80 shrink-0" />
 
           <button
             type="button"
             onClick={handleLoadSample}
-            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-indigo-300 hover:bg-slate-800 hover:text-indigo-200 transition"
+            className="inline-flex items-center gap-1.5 rounded-full px-2.5 md:px-3 py-1 text-xs font-semibold text-indigo-300 hover:bg-slate-800 hover:text-indigo-200 transition whitespace-nowrap shrink-0"
           >
-            <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
+            <Sparkles className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
             <span>{t.app.canvas.loadSample}</span>
           </button>
 
-          <div className="h-4 w-px bg-slate-700/80" />
+          <div className="h-4 w-px bg-slate-700/80 shrink-0" />
 
           <button
             type="button"
             onClick={toggleShowStickers}
             disabled={studyMode === 'memory' || studyMode === 'exam'}
-            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition ${
+            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 md:px-3 py-1 text-xs font-semibold transition whitespace-nowrap shrink-0 ${
               studyMode === 'memory' || studyMode === 'exam'
                 ? 'text-slate-500 opacity-50 cursor-not-allowed'
                 : showStickersOnCanvas
@@ -962,12 +964,12 @@ export function PalaceCanvas() {
             studyMode !== 'memory' &&
             studyMode !== 'exam' ? (
               <>
-                <Eye className="h-3.5 w-3.5 text-cyan-400" />
+                <Eye className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
                 <span>{t.app.canvas.toggleStickersHide}</span>
               </>
             ) : (
               <>
-                <EyeOff className="h-3.5 w-3.5" />
+                <EyeOff className="h-3.5 w-3.5 shrink-0" />
                 <span>{t.app.canvas.toggleStickersShow}</span>
               </>
             )}
@@ -975,20 +977,20 @@ export function PalaceCanvas() {
 
           {studyMode === 'memory' && totalPins > 0 && (
             <>
-              <div className="h-4 w-px bg-slate-700/80" />
+              <div className="h-4 w-px bg-slate-700/80 shrink-0" />
               <button
                 type="button"
                 onClick={() => setAllPinsRevealed(!allRevealed)}
-                className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 px-3 py-1 text-xs font-bold text-amber-300 hover:bg-amber-500/30 transition"
+                className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 px-2.5 md:px-3 py-1 text-xs font-bold text-amber-300 hover:bg-amber-500/30 transition whitespace-nowrap shrink-0"
               >
                 {allRevealed ? (
                   <>
-                    <EyeOff className="h-3 w-3" />
+                    <EyeOff className="h-3 w-3 shrink-0" />
                     <span>{t.app.memoryFlashcard.hideAllBtn}</span>
                   </>
                 ) : (
                   <>
-                    <Eye className="h-3 w-3" />
+                    <Eye className="h-3 w-3 shrink-0" />
                     <span>{t.app.memoryFlashcard.revealAllBtn}</span>
                   </>
                 )}
@@ -997,7 +999,7 @@ export function PalaceCanvas() {
                 type="button"
                 onClick={resetRecallProgress}
                 title={t.app.canvas.resetDemo}
-                className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs text-slate-400 hover:bg-slate-800 hover:text-white transition"
+                className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs text-slate-400 hover:bg-slate-800 hover:text-white transition shrink-0"
               >
                 <RotateCcw className="h-3 w-3" />
               </button>

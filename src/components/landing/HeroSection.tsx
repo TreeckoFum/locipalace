@@ -46,7 +46,7 @@ export default function HeroSection({ locale }: HeroSectionProps) {
       {/* ===================================================================== */}
       {/* 1. EXPANSIVE DESKTOP HERO & 50/50 OPTICAL BALANCE                     */}
       {/* ===================================================================== */}
-      <div className="w-full max-w-[1520px] mx-auto px-6 sm:px-10 lg:px-16 2xl:px-20 pt-10 pb-20">
+      <div className="w-full max-w-[1520px] mx-auto px-4 sm:px-10 lg:px-16 2xl:px-20 pt-8 sm:pt-10 pb-28 sm:pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* LEFT COLUMN (lg:col-span-7 xl:col-span-7) */}
           <div className="lg:col-span-7 xl:col-span-7 text-left space-y-6">
@@ -478,7 +478,7 @@ export default function HeroSection({ locale }: HeroSectionProps) {
       {/* ===================================================================== */}
       {/* 3. EXPANSIVE 3-COLUMN AUDIENCE CARDS                                  */}
       {/* ===================================================================== */}
-      <div className="w-full max-w-[1520px] mx-auto px-6 sm:px-10 lg:px-16 2xl:px-20 pb-28 pt-4">
+      <div className="w-full max-w-[1520px] mx-auto px-4 sm:px-10 lg:px-16 2xl:px-20 pb-28 pb-safe pt-4">
         <div className="text-center max-w-3xl mx-auto">
           <h2 className="text-2xl font-extrabold text-white sm:text-3xl lg:text-4xl">
             {t.landing.audTitle}
